@@ -1,0 +1,21 @@
+  services:
+    backend:
+      build:
+        context: ./backend
+        dockerfile: Dockerfile
+      ports:
+        - "8000:8000"
+      volumes:
+        - ./backend:/app
+      environment:
+        - ENV_VAR=VALUE
+    frontend:
+      build:
+        context: ./frontend
+        dockerfile: Dockerfile
+      ports:
+        - "3000:80"
+      volumes:
+        - ./frontend:/app
+      environment:
+        - ENV_VAR=VALUE
