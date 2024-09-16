@@ -1,22 +1,25 @@
+# frontend/Dockerfile
 FROM node:20.17.0
 
-# Set working directory
-WORKDIR /app
+# Set the working directory to /frontend
+WORKDIR /frontend
 
-# Copy package.json and package-lock.json
+# Copy over package files and install dependencies
 COPY package*.json ./
 
-# Clear npm cache and install dependencies
+# Clean npm cache and install dependencies
 RUN npm cache clean --force && npm install
 
-# Copy the rest of the application files
-COPY ./ ./
+# Copy all app files to /frontend directory
+COPY ./ . 
 
-# Build the frontend
+# Build the production version of the app
 RUN npm run build
 
-# Expose port 80
-EXPOSE 80
+# Create the logs directory inside public folder and copy log file to it
+# This ensures logs are visible and accessible in the frontend
+RUN mkdir -p ./public/logs && cp /root/.npm/_logs/*.log ./public/logs/npm-debug.log || echo "Log file not found"
 
-# Serve the production build
+# Serve the application using serve
+EXPOSE 80
 CMD ["npx", "serve", "-s", "build", "-l", "80"]
