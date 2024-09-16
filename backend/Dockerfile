@@ -9,11 +9,11 @@ WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy the app directory into the container's /app directory
-COPY ./app /app
+# Copy the app directory into the container's /app/app directory
+COPY ./app /app/app
 
-# Add after copying the app directory
-RUN ls -la /app
+# Add a debugging step to verify the structure
+RUN ls -la /app/app
 
 # Expose the port the app runs on
 EXPOSE 8000
