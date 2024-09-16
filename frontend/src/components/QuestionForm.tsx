@@ -1,25 +1,8 @@
 // frontend/src/components/QuestionForm.tsx
+
 import React, { useState } from 'react';
 import axios from 'axios';
-
-// Define a mapping from field type codes to descriptive names
-const fieldTypeMap: { [key: string]: string } = {
-  '0': 'Text',
-  '1': 'Checkbox',
-  '2': 'RadioButton',
-  '3': 'PushButton',
-  '4': 'ComboBox',
-  '5': 'ListBox',
-};
-
-interface Field {
-  name: string;
-  type: string;
-  x0: number;
-  y0: number;
-  x1: number;
-  y1: number;
-}
+import { Field } from '../types/Field'; // Import the shared Field interface
 
 interface Props {
   fields: Field[];
@@ -27,18 +10,18 @@ interface Props {
 
 const QuestionForm: React.FC<Props> = ({ fields }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<{ [key: string]: string }>({});
+  const [answers, setAnswers] = useState<{ [key: string]: any }>({});
   const [file, setFile] = useState<File | null>(null);
 
   const handleNext = () => {
-    setCurrentIndex(prev => prev + 1);
+    setCurrentIndex((prev) => prev + 1);
   };
 
   const handleBack = () => {
-    setCurrentIndex(prev => prev - 1);
+    setCurrentIndex((prev) => prev - 1);
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTextChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAnswers({
       ...answers,
       [fields[currentIndex].name]: e.target.value,
@@ -79,27 +62,46 @@ const QuestionForm: React.FC<Props> = ({ fields }) => {
     return (
       <div>
         <h2>Upload Original PDF to Populate</h2>
-        <input type="file" accept="application/pdf" onChange={e => setFile(e.target.files?.[0] || null)} />
-        <button onClick={handleSubmit} disabled={!file}>Submit and Download PDF</button>
+        <input
+          type="file"
+          accept="application/pdf"
+          onChange={(e) => setFile(e.target.files?.[0] || null)}
+        />
+        <button onClick={handleSubmit} disabled={!file}>
+          Submit and Download PDF
+        </button>
       </div>
     );
   }
 
   const currentField = fields[currentIndex];
 
+  // Map field type codes to descriptive names
+  const fieldTypeMap: { [key: string]: string } = {
+    '0': 'Text',
+    '1': 'Checkbox',
+    '2': 'RadioButton',
+    '3': 'PushButton',
+    '4': 'ComboBox',
+    '5': 'ListBox',
+  };
+
+  const fieldType = fieldTypeMap[currentField.type] || 'Unknown';
+
   return (
     <div>
-      <h2>Question {currentIndex + 1} of {fields.length}</h2>
-      <p>{currentField.name} ({fieldTypeMap[currentField.type]})</p> {/* Display field type */}
-
-      {currentField.type === '0' && (
+      <h2>
+        Question {currentIndex + 1} of {fields.length}
+      </h2>
+      <p>{currentField.name}</p>
+      {fieldType === 'Text' && (
         <input
           type="text"
           value={answers[currentField.name] || ''}
-          onChange={handleChange}
+          onChange={handleTextChange}
         />
       )}
-      {currentField.type === '1' && (
+      {fieldType === 'Checkbox' && (
         <input
           type="checkbox"
           checked={answers[currentField.name] === 'Yes'}
