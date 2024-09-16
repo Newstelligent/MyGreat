@@ -1,6 +1,7 @@
-# backend/app/main.py
+# /app/main.py
+
 from fastapi import FastAPI
-from app.routers import pdf
+from routers import pdf  # Adjusted import
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
