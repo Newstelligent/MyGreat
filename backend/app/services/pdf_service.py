@@ -1,8 +1,8 @@
 # backend/app/services/pdf_service.py
 import os
 import uuid
-from utils.pdf_analyzer import PDFAnalyzer
-from utils.pdf_populator import PDFPopulator
+from app.utils.pdf_analyzer import PDFAnalyzer
+from app.utils.pdf_populator import PDFPopulator
 from fastapi import UploadFile
 
 class PDFService:

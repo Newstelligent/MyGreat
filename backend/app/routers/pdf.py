@@ -1,7 +1,7 @@
 # /app/routers/pdf.py
 
 from fastapi import APIRouter, UploadFile, File, Form
-from services.pdf_service import PDFService  # Adjusted import
+from app.services.pdf_service import PDFService  # Corrected import
 from fastapi.responses import FileResponse
 import os
 

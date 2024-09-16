@@ -1,7 +1,7 @@
 # /app/main.py
 
 from fastapi import FastAPI
-from routers import pdf  # Adjusted import
+from app.routers import pdf
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()

@@ -3,3 +3,4 @@ uvicorn[standard]
 PyPDF2
 pdfminer.six
 python-multipart
+PyMuPDF

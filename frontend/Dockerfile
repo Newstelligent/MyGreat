@@ -16,10 +16,13 @@ COPY ./ .
 # Build the production version of the app
 RUN npm run build
 
+# Install 'serve' to serve the built React app
+RUN npm install -g serve
+
 # Create the logs directory inside public folder and copy log file to it
 # This ensures logs are visible and accessible in the frontend
 RUN mkdir -p ./public/logs && cp /root/.npm/_logs/*.log ./public/logs/npm-debug.log || echo "Log file not found"
 
-# Serve the application using serve
+# Serve the application using 'serve'
 EXPOSE 80
-CMD ["npx", "serve", "-s", "build", "-l", "80"]
+CMD ["serve", "-s", "build", "-l", "80"]
