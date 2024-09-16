@@ -2,8 +2,27 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+// Define a mapping from field type codes to descriptive names
+const fieldTypeMap: { [key: string]: string } = {
+  '0': 'Text',
+  '1': 'Checkbox',
+  '2': 'RadioButton',
+  '3': 'PushButton',
+  '4': 'ComboBox',
+  '5': 'ListBox',
+};
+
+interface Field {
+  name: string;
+  type: string;
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+}
+
 interface Props {
-  fields: string[];
+  fields: Field[];
 }
 
 const QuestionForm: React.FC<Props> = ({ fields }) => {
@@ -22,7 +41,14 @@ const QuestionForm: React.FC<Props> = ({ fields }) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAnswers({
       ...answers,
-      [fields[currentIndex]]: e.target.value,
+      [fields[currentIndex].name]: e.target.value,
+    });
+  };
+
+  const handleCheckboxChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAnswers({
+      ...answers,
+      [fields[currentIndex].name]: e.target.checked ? 'Yes' : 'Off',
     });
   };
 
@@ -59,11 +85,28 @@ const QuestionForm: React.FC<Props> = ({ fields }) => {
     );
   }
 
+  const currentField = fields[currentIndex];
+
   return (
     <div>
       <h2>Question {currentIndex + 1} of {fields.length}</h2>
-      <p>{fields[currentIndex]}</p>
-      <input type="text" value={answers[fields[currentIndex]] || ''} onChange={handleChange} />
+      <p>{currentField.name} ({fieldTypeMap[currentField.type]})</p> {/* Display field type */}
+
+      {currentField.type === '0' && (
+        <input
+          type="text"
+          value={answers[currentField.name] || ''}
+          onChange={handleChange}
+        />
+      )}
+      {currentField.type === '1' && (
+        <input
+          type="checkbox"
+          checked={answers[currentField.name] === 'Yes'}
+          onChange={handleCheckboxChange}
+        />
+      )}
+      {/* Add handling for other field types as needed */}
       <div>
         {currentIndex > 0 && <button onClick={handleBack}>Back</button>}
         <button onClick={handleNext}>Next</button>

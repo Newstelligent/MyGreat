@@ -1,8 +1,8 @@
 # backend/app/services/pdf_service.py
 import os
 import uuid
-from app.utils.pdf_analyzer import PDFAnalyzer
-from app.utils.pdf_populator import PDFPopulator
+from utils.pdf_analyzer import PDFAnalyzer
+from utils.pdf_populator import PDFPopulator
 from fastapi import UploadFile
 
 class PDFService:
@@ -11,18 +11,18 @@ class PDFService:
         analyzer = PDFAnalyzer(temp_file)
         fields = analyzer.get_fields()
         os.remove(temp_file)
-        return fields
+        # Convert Field objects to dictionaries for JSON serialization
+        fields_data = [
+            {
+                'name': field.name,
+                'type': field.field_type,
+                'x0': field.x0,
+                'y0': field.y0,
+                'x1': field.x1,
+                'y1': field.y1,
+            }
+            for field in fields
+        ]
+        return fields_data
 
-    async def fill_pdf(self, file: UploadFile, data: str):
-        temp_file = await self._save_temp_file(file)
-        populator = PDFPopulator(temp_file)
-        output_file = f"filled_{uuid.uuid4()}.pdf"
-        populator.fill_pdf(data, output_file)
-        os.remove(temp_file)
-        return output_file
-
-    async def _save_temp_file(self, file: UploadFile):
-        temp_filename = f"temp_{uuid.uuid4()}_{file.filename}"
-        with open(temp_filename, 'wb') as buffer:
-            buffer.write(await file.read())
-        return temp_filename
+    # ... rest of the code remains the same ...

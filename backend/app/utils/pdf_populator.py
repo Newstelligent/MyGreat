@@ -1,5 +1,5 @@
 # backend/app/utils/pdf_populator.py
-from PyPDF2 import PdfReader, PdfWriter
+import fitz  # PyMuPDF
 import json
 
 class PDFPopulator:
@@ -8,16 +8,38 @@ class PDFPopulator:
 
     def fill_pdf(self, data_str, output_path):
         data = json.loads(data_str)
-        reader = PdfReader(self.file_path)
-        writer = PdfWriter()
+        doc = fitz.open(self.file_path)
 
-        for page in reader.pages:
-            writer.add_page(page)
+        for page_index in range(len(doc)):
+            page = doc[page_index]
+            widgets = page.widgets()
+            if widgets is None:
+                continue
 
-        if writer.get_fields() is None:
-            writer.add_blank_page()
+            for widget in widgets:
+                field_name = widget.field_name
+                field_type = widget.field_type
 
-        writer.update_page_form_field_values(writer.pages[0], data)
+                if field_name in data:
+                    value = data[field_name]
+                    # Handle different field types
+                    if field_type == 0:  # Text field
+                        widget.field_value = value
+                    elif field_type == 1:  # Checkbox
+                        # Set value to 'Yes' or 'Off' depending on the input
+                        widget.field_value = 'Yes' if value.lower() in ['yes', 'true', '1', 'on'] else 'Off'
+                    elif field_type == 2:  # Radio button
+                        widget.field_value = value  # Value should match the radio option name
+                    elif field_type == 3:  # Push button
+                        pass  # Typically, we don't set values for buttons
+                    elif field_type == 4:  # Combo box (dropdown)
+                        widget.field_value = value
+                    elif field_type == 5:  # List box
+                        widget.field_value = value
+                    else:
+                        pass  # Handle other field types as needed
 
-        with open(output_path, 'wb') as out:
-            writer.write(out)
+                    widget.update()  # Apply the changes to the widget
+
+        doc.save(output_path)
+        doc.close()
